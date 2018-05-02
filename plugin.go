@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"github.com/vapor-ware/synse-amt-plugin/devices"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
@@ -35,7 +36,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	plugin.RegisterDeviceHandlers(&devices.AmtPower)
+
+	plugin.RegisterDeviceHandlers(
+		&devices.AmtPower,
+	)
+
 	// Set build-time version info.
 	plugin.SetVersion(sdk.VersionInfo{
 		BuildDate:     BuildDate,
