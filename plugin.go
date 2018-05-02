@@ -26,7 +26,6 @@ func DeviceIdentifier(data map[string]string) string {
 }
 
 func main() {
-
 	handlers, err := sdk.NewHandlers(DeviceIdentifier, nil)
 	if err != nil {
 		log.Fatal(err)
