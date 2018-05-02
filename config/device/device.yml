@@ -1,0 +1,13 @@
+#Temporary values until we figure out the real ones
+version: 1.0
+locations:
+  r1vec:
+    rack: rack-1
+    board: vec
+devices:
+  - type: power
+    model: AMT_POWER
+    instances:
+      - ip: "1.127.0.0.1"
+        location: r1vec
+        info: vec_power

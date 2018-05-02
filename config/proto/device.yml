@@ -1,0 +1,9 @@
+#Temporary values until we figure out the real ones
+version: 1.0
+prototypes:
+  - type: power
+    model: AMT_POWER
+    manufacturer: Vapor IO
+    protocol: amt
+    output:
+      - type: power_status
