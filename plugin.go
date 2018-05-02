@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"github.com/vapor-ware/synse-amt-plugin/devices"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
@@ -25,7 +26,6 @@ func DeviceIdentifier(data map[string]string) string {
 }
 
 func main() {
-
 	handlers, err := sdk.NewHandlers(DeviceIdentifier, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +35,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	plugin.RegisterDeviceHandlers(&devices.AmtPower)
+
+	plugin.RegisterDeviceHandlers(
+		&devices.AmtPower,
+	)
+
 	// Set build-time version info.
 	plugin.SetVersion(sdk.VersionInfo{
 		BuildDate:     BuildDate,
