@@ -46,6 +46,10 @@ docker:  ## Build the docker image
 		-t vaporio/$(PLUGIN_NAME)-plugin:latest \
 		-t vaporio/$(PLUGIN_NAME)-plugin:$(PLUGIN_VERSION) .
 
+.PHONY: deploy
+deploy:  ## Run a local deployment of Synse Server & AMT Plugin
+	docker-compose -f deploy.yml up
+
 .PHONY: fmt
 fmt:  ## Run goimports on all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
