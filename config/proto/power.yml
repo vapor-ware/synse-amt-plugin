@@ -1,0 +1,8 @@
+version: 1.0
+prototypes:
+  - type: power
+    model: amt-power
+    manufacturer: Vapor IO
+    protocol: amt
+    output:
+      - type: state

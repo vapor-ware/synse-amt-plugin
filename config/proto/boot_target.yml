@@ -1,0 +1,8 @@
+version: 1.0
+prototypes:
+  - type: boot_target
+    model: amt-boot-target
+    manufacturer: Vapor IO
+    protocol: amt
+    output:
+      - type: target
