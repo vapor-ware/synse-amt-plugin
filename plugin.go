@@ -38,6 +38,7 @@ func main() {
 
 	plugin.RegisterDeviceHandlers(
 		&devices.AmtPower,
+		&devices.AmtBootTarget,
 	)
 
 	// Set build-time version info.
