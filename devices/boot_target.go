@@ -8,7 +8,7 @@ import (
 	"github.com/vapor-ware/synse-sdk/sdk/logger"
 )
 
-// AmtBootTarget handler for setting an amt device's boot target.
+// AmtBootTarget is the handler for setting an amt device's boot target
 var AmtBootTarget = sdk.DeviceHandler{
 	Type:  "boot_target",
 	Model: "amt-boot-target",
@@ -17,7 +17,7 @@ var AmtBootTarget = sdk.DeviceHandler{
 	Write: bootTargetWrite,
 }
 
-// bootTargetRead gets the current power state of the AMT device
+// bootTargetRead gets the current boot target state of the AMT device
 func bootTargetRead(device *sdk.Device) ([]*sdk.Reading, error) {
 
 	readings := []*sdk.Reading{
@@ -26,6 +26,7 @@ func bootTargetRead(device *sdk.Device) ([]*sdk.Reading, error) {
 	return readings, nil
 }
 
+// bootTargetWrite sets the amt boot target
 func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	action := data.Action
 	raw := data.Raw
@@ -35,7 +36,7 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 		return fmt.Errorf("no values specified for 'raw', but required")
 	}
 
-	if action == "state" {
+	if action == "target" {
 		cmd := string(raw[0])
 
 		switch strings.ToLower(cmd) {
@@ -49,7 +50,7 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 
 	} else {
 		// If we reach here, then the specified action is not supported.
-		return fmt.Errorf("action '%s' is not supported for bmc power devices", action)
+		return fmt.Errorf("action '%s' is not supported for AMT boot target devices", action)
 	}
 
 	return nil

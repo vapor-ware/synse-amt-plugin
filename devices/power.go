@@ -26,6 +26,7 @@ func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 	return readings, nil
 }
 
+// amtPowerWrite sets the power state of the AMT device
 func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	action := data.Action
 	raw := data.Raw
@@ -53,7 +54,7 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 
 	} else {
 		// If we reach here, then the specified action is not supported.
-		return fmt.Errorf("action '%s' is not supported for bmc power devices", action)
+		return fmt.Errorf("action '%s' is not supported for AMT power devices", action)
 	}
 
 	return nil
