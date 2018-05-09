@@ -2,7 +2,7 @@ package devices
 
 import (
 	"fmt"
-	"strings"
+	"os/exec"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
 	"github.com/vapor-ware/synse-sdk/sdk/logger"
@@ -20,8 +20,18 @@ var AmtPower = sdk.DeviceHandler{
 // amtPowerRead gets the current power state of the AMT device
 func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 
+	cmd := exec.Command("python", "scripts/power.py", device.Data["ip"], // nolint: gas
+		device.Data["password"], "status")
+
+	out, err := cmd.Output()
+
+	if err != nil {
+		logger.Errorf("error: %s", cmd.Stderr)
+		return nil, err
+	}
+
 	readings := []*sdk.Reading{
-		sdk.NewReading("state", "on"),
+		sdk.NewReading("state", string(out)),
 	}
 	return readings, nil
 }
@@ -37,19 +47,15 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	}
 
 	if action == "state" {
-		cmd := string(raw[0])
+		commandName := string(raw[0])
+		cmd := exec.Command("python", "scripts/power.py", device.Data["ip"], // nolint: gas
+			device.Data["password"], commandName)
 
-		switch strings.ToLower(cmd) {
-		case "on":
-			logger.Debug("AMT Power On")
-		case "off":
-			logger.Debug("AMT Power Off")
-		case "reset":
-			logger.Debug("AMT Power Resetting")
-		case "cycle":
-			logger.Debug("AMT Power Cycling")
-		default:
-			return fmt.Errorf("unsupported command for amt power 'state' action: %s", cmd)
+		_, err := cmd.Output()
+
+		if err != nil {
+			logger.Errorf("error: %s", cmd.Stderr)
+			return err
 		}
 
 	} else {
