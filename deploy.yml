@@ -8,6 +8,8 @@ services:
   synse-server:
     container_name: synse-server
     image: vaporio/synse-server
+    environment:
+      SYNSE_PLUGIN_TCP_AMT: amt-plugin:5001
     ports:
       - 5000:5000
     links:
@@ -19,6 +21,7 @@ services:
     ports:
       - 5001:5001
     volumes:
-      - ./deploy/devices:/tmp/devices
+      - ./config/device:/tmp/devices
+      - ./scripts:/plugin/scripts
     environment:
       PLUGIN_DEVICE_PATH: /tmp/devices
