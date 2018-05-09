@@ -1,6 +1,7 @@
 package devices
 
 import (
+	"fmt"
 	"os/exec"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
@@ -25,7 +26,7 @@ func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 	out, err := cmd.Output()
 
 	if err != nil {
-		logger.Errorf("Error: %s\n", cmd.Stderr)
+		logger.Errorf("error: %s", cmd.Stderr)
 		return nil, err
 	}
 
@@ -42,8 +43,7 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	// When writing to a AMT Power device, we always expect there to be
 	// raw data specified. If there isn't, we return an error.
 	if len(raw) == 0 {
-		logger.Error("no values specified for 'raw', but required")
-		return nil
+		return fmt.Errorf("no values specified for 'raw', but required")
 	}
 
 	if action == "state" {
@@ -54,14 +54,13 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 		_, err := cmd.Output()
 
 		if err != nil {
-			logger.Errorf("Error: %s\n", cmd.Stderr)
+			logger.Errorf("error: %s", cmd.Stderr)
 			return err
 		}
 
 	} else {
 		// If we reach here, then the specified action is not supported.
-		logger.Error("action '%s' is not supported for AMT power devices", action)
-		return nil
+		return fmt.Errorf("action '%s' is not supported for AMT power devices", action)
 	}
 
 	return nil
