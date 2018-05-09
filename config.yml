@@ -2,8 +2,8 @@ version: 1.0
 name: amt
 debug: true
 network:
-  type: unix
-  address: amt.sock
+  type: tcp
+  address: ":5001"
 settings:
   mode: parallel
   read:

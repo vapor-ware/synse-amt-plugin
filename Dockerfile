@@ -4,8 +4,13 @@ COPY . .
 RUN make build GIT_TAG="" GIT_COMMIT=""
 
 
-FROM iron/go
+FROM python:3.6-alpine
 LABEL maintainer="vapor@vapor.io"
+
+RUN apk add go --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
 WORKDIR /plugin
 
