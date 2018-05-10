@@ -11,8 +11,8 @@ import (
 
 const (
 	pxeTarget = "pxe"
-	hdTarget =  "hd"
-	cdTarget =  "cd"
+	hdTarget  = "hd"
+	cdTarget  = "cd"
 )
 
 // AmtBootTarget is the handler for setting an amt device's boot target
@@ -39,7 +39,7 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 
 		switch strings.ToLower(target) {
 		case pxeTarget, hdTarget, cdTarget:
-			logger.Infof("setting boot target to '%s'", target)
+			logger.Infof("setting boot target to: %s", target)
 		default:
 			return fmt.Errorf("unsupported amt boot target: '%s'", target)
 		}
