@@ -2,9 +2,10 @@ package devices
 
 import (
 	"fmt"
+	"os/exec"
+
 	"github.com/vapor-ware/synse-sdk/sdk"
 	"github.com/vapor-ware/synse-sdk/sdk/logger"
-	"os/exec"
 )
 
 // AmtBootTarget is the handler for setting an amt device's boot target
@@ -29,10 +30,10 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	if action == "target" {
 		target := string(raw[0])
 
-		supportedTargets := map[string]bool {
+		supportedTargets := map[string]bool{
 			"pxe": true,
-			"hd": true,
-			"cd": true,
+			"hd":  true,
+			"cd":  true,
 		}
 
 		if supportedTargets[target] {
