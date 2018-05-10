@@ -2,10 +2,17 @@ package devices
 
 import (
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
 	"github.com/vapor-ware/synse-sdk/sdk/logger"
+)
+
+const (
+	pxeTarget = "pxe"
+	hdTarget  = "hd"
+	cdTarget  = "cd"
 )
 
 // AmtBootTarget is the handler for setting an amt device's boot target
@@ -13,17 +20,8 @@ var AmtBootTarget = sdk.DeviceHandler{
 	Type:  "boot_target",
 	Model: "amt-boot-target",
 
-	Read:  bootTargetRead,
+	Read:  nil,
 	Write: bootTargetWrite,
-}
-
-// bootTargetRead gets the current boot target state of the AMT device
-func bootTargetRead(device *sdk.Device) ([]*sdk.Reading, error) {
-
-	readings := []*sdk.Reading{
-		sdk.NewReading("state", "default"),
-	}
-	return readings, nil
 }
 
 // bootTargetWrite sets the amt boot target
@@ -37,21 +35,29 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	}
 
 	if action == "target" {
-		cmd := string(raw[0])
+		target := string(raw[0])
 
-		switch strings.ToLower(cmd) {
-		case "cd":
-			logger.Debug("Set Boot Target to cd")
-		case "hd":
-			logger.Debug("Set Boot Target to hd")
+		switch strings.ToLower(target) {
+		case pxeTarget, hdTarget, cdTarget:
+			logger.Infof("setting boot target to: %s", target)
 		default:
-			return fmt.Errorf("unsupported command for amt power 'state' action: %s", cmd)
+			return fmt.Errorf("unsupported amt boot target: '%s'", target)
 		}
 
-	} else {
-		// If we reach here, then the specified action is not supported.
-		return fmt.Errorf("action '%s' is not supported for AMT boot target devices", action)
+		cmd := exec.Command("python", "scripts/boot_target.py", device.Data["ip"], // nolint: gas
+			device.Data["password"], target)
+
+		_, err := cmd.Output()
+
+		if err != nil {
+			logger.Errorf("error: %s", cmd.Stderr)
+			return err
+		}
+
+		return nil
+
 	}
 
-	return nil
+	// If we reach here, then the specified action is not supported.
+	return fmt.Errorf("action '%s' is not supported for AMT boot target devices", action)
 }

@@ -1,6 +1,10 @@
-# Python commands for amt power status and management
+# -*- coding: utf-8 -*-
+
+"""Python commands for amt power status and management"""
+
 import sys
 from amt.client import Client
+
 
 def main():
     """Communicate with a given amt device
@@ -16,7 +20,7 @@ def main():
         'on': amt_client.power_on,
         'off': amt_client.power_off,
         'cycle': amt_client.power_cycle
-        }
+    }
 
     # Not sure exactly where these codes are defined yet, still looking
     status_codes = {
@@ -33,6 +37,7 @@ def main():
             sys.stdout.write(output)
     else:
         raise ValueError('No command {} found for amt power device'.format(command_name))
+
 
 if __name__ == '__main__':
     main()
