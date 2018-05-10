@@ -49,12 +49,13 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 
 			return nil
 
-		} else {
-			return fmt.Errorf("unsupported amt boot target: %s", target)
 		}
 
-	} else {
-		// If we reach here, then the specified action is not supported.
-		return fmt.Errorf("action '%s' is not supported for AMT boot target devices", action)
+		// If we reach here, the specified boot target is not supported
+		return fmt.Errorf("unsupported amt boot target: '%s'", target)
+
 	}
+
+	// If we reach here, then the specified action is not supported.
+	return fmt.Errorf("action '%s' is not supported for AMT boot target devices", action)
 }
