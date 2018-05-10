@@ -30,7 +30,7 @@ def main():
             output = status_codes.get(output)
             if not output:
                 raise ValueError('Unexpected status "{}" returned for amt power status', output)
-            print(output)
+            sys.stdout.write(output)
     else:
         raise ValueError('No command {} found for amt power device'.format(command_name))
 
