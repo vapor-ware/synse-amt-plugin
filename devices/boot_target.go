@@ -11,8 +11,8 @@ import (
 
 const (
 	pxeTarget = "pxe"
-	hdTarget = "hd"
-	cdTarget = "cd"
+	hdTarget =  "hd"
+	cdTarget =  "cd"
 )
 
 // AmtBootTarget is the handler for setting an amt device's boot target
