@@ -19,10 +19,8 @@ var (
 
 // DeviceIdentifier defines the AMT-specific way of uniquely identifying a device
 // through its device configuration.
-//
-// FIXME - this is just a stub for framing up the plugin
 func DeviceIdentifier(data map[string]string) string {
-	return ""
+	return data["ip"]
 }
 
 func main() {
