@@ -31,7 +31,7 @@ HAS_GOX  := $(shell which gox)
 
 .PHONY: build
 build:  ## Build the plugin Go binary
-	go build -ldflags "${LDFLAGS}" -o build/emulator
+	go build -ldflags "${LDFLAGS}" -o build/plugin
 
 .PHONY: ci
 ci:  ## Run CI checks locally (build, lint)
