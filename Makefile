@@ -3,7 +3,7 @@
 #
 
 PLUGIN_NAME    := amt
-PLUGIN_VERSION := 0.1.0-alpha
+PLUGIN_VERSION := 0.1.1-alpha
 IMAGE_NAME     := vaporio/amt-plugin
 
 GIT_COMMIT ?= $(shell git rev-parse --short HEAD 2> /dev/null || true)
