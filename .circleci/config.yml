@@ -37,6 +37,15 @@ jobs:
             - v1-vendor-{{ checksum "Gopkg.toml" }}-{{ checksum "Gopkg.lock" }}
             - v1-vendor-{{ checksum "Gopkg.toml" }}
       - run:
+          name: Testing Something
+          command: |
+            tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+            since_tag=$(if [ "${tag}" ]; then echo "--since-tag ${tag}"; fi)
+
+            echo "tag: ${tag}"
+            echo "since_tag: ${since_tag}"
+
+      - run:
           name: Install Vendored Dependencies
           command: make dep
       - run:
