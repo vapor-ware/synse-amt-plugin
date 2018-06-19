@@ -2,11 +2,11 @@ package devices
 
 import (
 	"fmt"
-	"os/exec"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/vapor-ware/synse-sdk/sdk"
-	"github.com/vapor-ware/synse-sdk/sdk/logger"
+	"github.com/vapor-ware/synse-sdk/sdk/scripts"
 )
 
 const (
@@ -17,17 +17,15 @@ const (
 
 // AmtBootTarget is the handler for setting an amt device's boot target
 var AmtBootTarget = sdk.DeviceHandler{
-	Type:  "boot_target",
-	Model: "amt-boot-target",
-
-	Read:  nil,
+	Name:  "boot_target",
 	Write: bootTargetWrite,
 }
 
 // bootTargetWrite sets the amt boot target
 func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	action := data.Action
-	raw := data.Raw
+	raw := data.Data
+
 	// When writing to a boot_target device, we always expect there to be
 	// raw data specified. If there isn't, we return an error.
 	if len(raw) == 0 {
@@ -35,27 +33,25 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	}
 
 	if action == "target" {
-		target := string(raw[0])
+		target := string(raw)
 
 		switch strings.ToLower(target) {
 		case pxeTarget, hdTarget, cdTarget:
-			logger.Infof("setting boot target to: %s", target)
+			log.Infof("setting boot target to: %s", target)
 		default:
 			return fmt.Errorf("unsupported amt boot target: '%s'", target)
 		}
 
-		cmd := exec.Command("python", "scripts/boot_target.py", device.Data["ip"], // nolint: gas
-			device.Data["password"], target)
+		ip := fmt.Sprint(device.Data["ip"])
+		pass := fmt.Sprint(device.Data["password"])
 
-		_, err := cmd.Output()
-
+		cmd := scripts.NewCommand("python", "scripts/boot_target.py", ip, pass, target)
+		err := cmd.Run()
 		if err != nil {
-			logger.Errorf("error: %s", cmd.Stderr)
+			log.Errorf("error: %s", cmd.Stderr())
 			return err
 		}
-
 		return nil
-
 	}
 
 	// If we reach here, then the specified action is not supported.

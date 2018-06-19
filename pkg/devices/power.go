@@ -2,17 +2,16 @@ package devices
 
 import (
 	"fmt"
-	"os/exec"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/vapor-ware/synse-sdk/sdk"
-	"github.com/vapor-ware/synse-sdk/sdk/logger"
+	"github.com/vapor-ware/synse-sdk/sdk/scripts"
 )
 
 // AmtPower is the handler for the AMT power controller.
 var AmtPower = sdk.DeviceHandler{
-	Type:  "power",
-	Model: "amt-power",
-
+	Name:  "power",
 	Read:  amtPowerRead,
 	Write: amtPowerWrite,
 }
@@ -20,18 +19,18 @@ var AmtPower = sdk.DeviceHandler{
 // amtPowerRead gets the current power state of the AMT device
 func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 
-	cmd := exec.Command("python", "scripts/power.py", device.Data["ip"], // nolint: gas
-		device.Data["password"], "status")
+	ip := fmt.Sprint(device.Data["ip"])
+	pass := fmt.Sprint(device.Data["password"])
 
-	out, err := cmd.Output()
-
+	cmd := scripts.NewCommand("python", "scripts/power.py", ip, pass, "status")
+	err := cmd.Run()
 	if err != nil {
-		logger.Errorf("error: %s", cmd.Stderr)
+		log.Errorf("error: %s", cmd.Stderr())
 		return nil, err
 	}
 
 	readings := []*sdk.Reading{
-		sdk.NewReading("state", string(out)),
+		device.GetOutput("power.state").MakeReading(cmd.Stdout()),
 	}
 	return readings, nil
 }
@@ -39,7 +38,8 @@ func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 // amtPowerWrite sets the power state of the AMT device
 func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	action := data.Action
-	raw := data.Raw
+	raw := data.Data
+
 	// When writing to a AMT Power device, we always expect there to be
 	// raw data specified. If there isn't, we return an error.
 	if len(raw) == 0 {
@@ -47,21 +47,21 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	}
 
 	if action == "state" {
-		commandName := string(raw[0])
-		cmd := exec.Command("python", "scripts/power.py", device.Data["ip"], // nolint: gas
-			device.Data["password"], commandName)
+		commandName := string(raw)
 
-		_, err := cmd.Output()
+		ip := fmt.Sprint(device.Data["ip"])
+		pass := fmt.Sprint(device.Data["password"])
 
+		cmd := scripts.NewCommand("python", "scripts/power.py", ip, pass, commandName)
+		err := cmd.Run()
 		if err != nil {
-			logger.Errorf("error: %s", cmd.Stderr)
+			log.Errorf("error: %s", cmd.Stderr())
 			return err
 		}
+		return nil
 
-	} else {
-		// If we reach here, then the specified action is not supported.
-		return fmt.Errorf("action '%s' is not supported for AMT power devices", action)
 	}
 
-	return nil
+	// If we reach here, then the specified action is not supported.
+	return fmt.Errorf("action '%s' is not supported for AMT power devices", action)
 }
