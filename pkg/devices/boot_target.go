@@ -29,7 +29,7 @@ func bootTargetWrite(device *sdk.Device, data *sdk.WriteData) error {
 	// When writing to a boot_target device, we always expect there to be
 	// raw data specified. If there isn't, we return an error.
 	if len(raw) == 0 {
-		return fmt.Errorf("no values specified for 'raw', but required")
+		return fmt.Errorf("no values specified for write 'data', but required")
 	}
 
 	if action == "target" {
