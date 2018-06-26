@@ -1,33 +1,57 @@
+[![CircleCI](https://circleci.com/gh/vapor-ware/synse-amt-plugin.svg?style=shield)](https://circleci.com/gh/vapor-ware/synse-amt-plugin)
+
 # Synse AMT Plugin
-A [Synse Server][synse-server] plugin for communicating with Intel AMT enabled machines.
+A plugin for [Synse Server][synse-server] used to communicate with Intel AMT enabled machines.
 
-This plugin supports two types of devices:
-- boot_target
-- power
+## Plugin Support
+### Outputs
+Outputs should be referenced by name. A single device can have more than one instance
+of an output type. A value of `-` in the table below indicates that there is no value
+set for that field.
 
-They provide functionality for:
 
-**Reads**:
-- Power status *(on/off)*
+| Name | Description | Unit | Precision | Scaling Factor |
+| ---- | ----------- | ---- | --------- | -------------- |
+| power.state | An output type for power state readings (on/off). | - | - | - |
+| boot.target | An output type for boot target settings. | - | - | - |
 
-**Writes**:
-- Power control *(on/off/cycle)*
-- Boot target selection *(pxe/hd/cd)*
+
+### Device Handlers
+Device Handlers should be referenced by name.
+
+| Name | Description | Read | Write | Bulk Read |
+| ---- | ----------- | ---- | ----- | --------- |
+| boot_target | A handler for setting an AMT device's boot target. | ✗ | ✓ | ✗ |
+| power | A handler for power control of an AMT device. | ✓ | ✓ | ✗ |
+
+
+### Write Values
+This plugin supports the following values when writing to a device via a handler.
+
+| Handler | Write Action | Write Data |
+| ------- | ------------ | ---------- |
+| boot_target | `target` | `pxe`, `hd`, `cd` |
+| chassis.power | `state` | `on`, `off`, `cycle` |
+
 
 ## Getting Started
 
 ### Getting the Plugin
-You can get the Synse AMT plugin either by cloning this repo and running one of:
-```console
-# Build the AMT plugin binary locally
-$ make setup build
+You can get the Synse AMT plugin either by cloning this repo, setting up the project dependencies,
+and building the binary or docker image:
+```bash
+# Setup the project
+$ make setup
 
-# Build the AMT plugin Docker image locally
+# Build the binary
+$ make build
+
+# Build the docker image
 $ make docker
 ```
 
 You can also use a pre-built docker image from [DockerHub][plugin-dockerhub]
-```console
+```bash
 $ docker pull vaporio/amt-plugin
 ```
 
@@ -35,14 +59,14 @@ Or a pre-built binary from the latest [release][plugin-release].
 
 ### Running the Plugin
 If you are using the plugin binary:
-```console
+```bash
 # The name of the plugin binary may differ depending on whether it is built
 # locally or a pre-built binary is used.
 $ ./plugin
 ```
 
 If you are using the Docker image:
-```console
+```bash
 $ docker run vaporio/amt-plugin
 ```
 
@@ -54,14 +78,13 @@ For information and examples on how to deploy a plugin with Synse Server, see th
 [Plugin SDK Documentation][sdk-documentation]
 
 ## Configuring the Plugin for your deployment
-Plugins have three different types of configurations - these are all described in detail
-in the [SDK Configuration Documentation][sdk-config-docs].
+Plugin and device configuration are described in detail in the [SDK Configuration Documentation][sdk-config-docs].
 
-For your deployment, you will need to provide your own device instance config, examples of
+For your deployment, you will need to provide your own device config, examples of
 which can be found in [config/device](config/device).
 
-### instance config
-The instance configuration for the AMT plugin is fairly standard. It requires devices to
+### device config
+The device configuration for the AMT plugin is fairly standard. It requires devices to
 have:
 - `ip`: The IP address/hostname for the AMT-enabled machine. (port not included)
 - `password`: The password for AMT.
@@ -72,26 +95,27 @@ ADMIN is as follows:
 ```yaml
 version: 1.0
 locations:
-  r1vec:
-    rack: rack-1
-    board: vec
+  - name: r1vec
+    rack: 
+      name: rack-1
+    board:
+      name: vec
 devices:
-  - type: power
-    model: amt-power
+  - name: power
+    outputs:
+      - type: power
     instances:
-      - ip: "10.1.2.3"
-        password: "ADMIN"
+      - info: System Power
         location: r1vec
-        info: vec_power
+        data:
+          ip: 10.1.2.3
+          password: ADMIN
 ```
 
-Note that `location` and `info` are reserved for internal usage. The `location` is required,
-but `info` is optional.
-
 Once you have your own config, you can either mount it into the container to the default location
-at `/etc/synse/config/device/<filename>.yml`,  or mount it anywhere in the container, e.g.
+at `/etc/synse/plugin/config/device`,  or mount it anywhere in the container, e.g.
 `/tmp/cfg/<filename>.yml`, and specify that path in the device instance config override environment
-variable, `PLUGIN_DEVICE_PATH=/tmp/cfg`.
+variable, `PLUGIN_DEVICE_CONFIG=/tmp/cfg`.
 
 ## Feedback
 Feedback for this plugin, or any component of the Synse ecosystem, is greatly appreciated!
@@ -102,6 +126,7 @@ feedback you may have.
 ## Contributing
 We welcome contributions to the project. The project maintainers actively manage the issues
 and pull requests. If you choose to contribute, we ask that you either comment on an existing
+issue or open a new one.
 
 The Synse AMT Plugin, and all other components of the Synse ecosystem, is released under the
 [GPL-3.0](LICENSE) license.
