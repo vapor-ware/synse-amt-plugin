@@ -38,7 +38,6 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "v1.0"
   name = "github.com/vapor-ware/synse-sdk"
   packages = [
     "sdk",
@@ -47,7 +46,8 @@
     "sdk/policies",
     "sdk/scripts"
   ]
-  revision = "b02b9075b047fcd1567d60c453d4a0ce8fedc15b"
+  revision = "a7ed632f114763592399c68aba6bf31b1ca239c5"
+  version = "1.0.1"
 
 [[projects]]
   name = "github.com/vapor-ware/synse-server-grpc"
@@ -158,6 +158,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "45fb676ef5380cf760dc516733f5c45b49899c37e4e4b075ba2f14200972de0e"
+  inputs-digest = "009cf9c1ac7ddbfcd641137f8b11039ad398a44ebd757fb756ad1985372661c5"
   solver-name = "gps-cdcl"
   solver-version = 1
