@@ -29,10 +29,14 @@ func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 		return nil, err
 	}
 
-	readings := []*sdk.Reading{
-		device.GetOutput("power.state").MakeReading(cmd.Stdout()),
+	powerState, err := device.GetOutput("power.state").MakeReading(cmd.Stdout())
+	if err != nil {
+		return nil, err
 	}
-	return readings, nil
+
+	return []*sdk.Reading{
+		powerState,
+	}, nil
 }
 
 // amtPowerWrite sets the power state of the AMT device
