@@ -19,6 +19,5 @@ RUN apk --update --no-cache add python2 \
 
 COPY --from=builder /go/src/github.com/vapor-ware/synse-amt-plugin/build/plugin ./plugin
 COPY config.yml .
-COPY config/proto /etc/synse/plugin/config/proto
 
 CMD ["./plugin"]
