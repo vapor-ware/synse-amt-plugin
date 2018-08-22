@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/vapor-ware/synse-amt-plugin.svg?style=shield)](https://circleci.com/gh/vapor-ware/synse-amt-plugin)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin?ref=badge_shield)
 
 # Synse AMT Plugin
 A plugin for [Synse Server][synse-server] used to communicate with Intel AMT enabled machines.
@@ -137,3 +138,7 @@ The Synse AMT Plugin, and all other components of the Synse ecosystem, is releas
 [plugin-release]: https://github.com/vapor-ware/synse-amt-plugin/releases
 [sdk-config-docs]: http://synse-sdk.readthedocs.io/en/latest/user/configuration.html
 [sdk-documentation]:http://synse-sdk.readthedocs.io/en/latest/user/tutorial.html#build-and-run-the-plugin
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin?ref=badge_large)
