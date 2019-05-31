@@ -1,17 +1,8 @@
-version: 1.0
-locations:
-  - name: r1vec
-    rack:
-      name: rack-1
-    board:
-      name: vec
+version: 3
 devices:
-  - name: boot_target
-    outputs:
-      - type: boot.target
-    instances:
-      - info: VEC boot target
-        location: r1vec
-        data:
-          ip: "127.0.0.1"
-          password: "guest"
+- type: boot_target
+  instances:
+  - info: server boot target
+    data:
+      ip: "127.0.0.1"
+      password: "guest"
