@@ -3,9 +3,9 @@ package devices
 import (
 	"fmt"
 
-	log "github.com/Sirupsen/logrus"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/vapor-ware/synse-sdk/sdk"
+	"github.com/vapor-ware/synse-sdk/sdk/output"
 	"github.com/vapor-ware/synse-sdk/sdk/scripts"
 )
 
@@ -17,7 +17,7 @@ var AmtPower = sdk.DeviceHandler{
 }
 
 // amtPowerRead gets the current power state of the AMT device
-func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
+func amtPowerRead(device *sdk.Device) ([]*output.Reading, error) {
 
 	ip := fmt.Sprint(device.Data["ip"])
 	pass := fmt.Sprint(device.Data["password"])
@@ -29,12 +29,9 @@ func amtPowerRead(device *sdk.Device) ([]*sdk.Reading, error) {
 		return nil, err
 	}
 
-	powerState, err := device.GetOutput("power.state").MakeReading(cmd.Stdout())
-	if err != nil {
-		return nil, err
-	}
+	powerState := output.State.MakeReading(cmd.Stdout())
 
-	return []*sdk.Reading{
+	return []*output.Reading{
 		powerState,
 	}, nil
 }
@@ -47,7 +44,7 @@ func amtPowerWrite(device *sdk.Device, data *sdk.WriteData) error {
 	// When writing to a AMT Power device, we always expect there to be
 	// raw data specified. If there isn't, we return an error.
 	if len(raw) == 0 {
-		return fmt.Errorf("no values specified for 'raw', but required")
+		return fmt.Errorf("no values specified for 'data', but required")
 	}
 
 	if action == "state" {

@@ -1,31 +1,28 @@
 package pkg
 
 import (
-	"log"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/vapor-ware/synse-amt-plugin/pkg/devices"
-	"github.com/vapor-ware/synse-amt-plugin/pkg/outputs"
 	"github.com/vapor-ware/synse-sdk/sdk"
 )
 
 // MakePlugin creates a new instance of the AMT plugin.
 func MakePlugin() *sdk.Plugin {
-	plugin := sdk.NewPlugin(
+	plugin, err := sdk.NewPlugin(
 		sdk.CustomDeviceIdentifier(deviceIdentifier),
-	)
-
-	err := plugin.RegisterOutputTypes(
-		&outputs.BootTarget,
-		&outputs.PowerState,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	plugin.RegisterDeviceHandlers(
+	// Register device handlers.
+	err = plugin.RegisterDeviceHandlers(
 		&devices.AmtBootTarget,
 		&devices.AmtPower,
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return plugin
 }
