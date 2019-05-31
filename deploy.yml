@@ -1,9 +1,11 @@
 #
 # deploy.yml
 #
-# Simple deployment of Synse Server & Synse AMT Plugin
+# An example deployment of Synse Server with the AMT
+# plugin.
 #
-version: "3"
+
+version: '3'
 services:
   synse-server:
     container_name: synse-server
@@ -11,17 +13,17 @@ services:
     environment:
       SYNSE_PLUGIN_TCP: amt-plugin:5001
     ports:
-      - 5000:5000
+    - '5000:5000'
     links:
-      - amt-plugin
+    - amt-plugin
 
   amt-plugin:
     container_name: amt-plugin
     image: vaporio/amt-plugin
     ports:
-      - 5001:5001
+    - '5001:5001'
     volumes:
-      - ./config/device:/tmp/devices
-      - ./scripts:/plugin/scripts
+    - ./config/device:/tmp/devices
+    - ./scripts:/plugin/scripts
     environment:
       PLUGIN_DEVICE_CONFIG: /tmp/devices

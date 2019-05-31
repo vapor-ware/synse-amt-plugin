@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-"""Python commands for amt power status and management"""
+"""Python commands for AMT power status and management."""
 
 import sys
+
 from amt.client import Client
 
 
 def main():
-    """Communicate with a given amt device
-    """
+    """Get or set the power state for an AMT enabled device."""
+
     ip = sys.argv[1]
     password = sys.argv[2]
     command_name = sys.argv[3]
@@ -22,7 +23,8 @@ def main():
         'cycle': amt_client.power_cycle
     }
 
-    # Not sure exactly where these codes are defined yet, still looking
+    # See: https://www.dmtf.org/sites/default/files/standards/documents/DSP1027_2.0.0.pdf
+    # Section 7.3.1, Table 3
     status_codes = {
         '2': 'on',
         '8': 'off'
