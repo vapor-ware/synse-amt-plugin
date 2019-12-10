@@ -1,19 +1,10 @@
-#
-# Builder Image
-#
-FROM vaporio/golang:1.13 as builder
 
-#
-# Final Image
-#
 FROM vaporio/python:3.6-slim
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.name="vaporio/amt-plugin" \
       org.label-schema.vcs-url="https://github.com/vapor-ware/synse-amt-plugin" \
       org.label-schema.vendor="Vapor IO"
-
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
