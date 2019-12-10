@@ -1,8 +1,7 @@
 #
-# deploy.yml
+# docker-compose.yaml
 #
-# An example deployment of Synse Server with the AMT
-# plugin.
+# An example deployment of Synse Server with the AMT plugin.
 #
 
 version: '3'
@@ -24,6 +23,5 @@ services:
     - '5001:5001'
     volumes:
     - ./config/device:/tmp/devices
-    - ./scripts:/plugin/scripts
     environment:
       PLUGIN_DEVICE_CONFIG: /tmp/devices
