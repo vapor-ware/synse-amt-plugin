@@ -2,143 +2,133 @@
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin?ref=badge_shield)
 
 # Synse AMT Plugin
+
 A plugin for [Synse Server][synse-server] used to communicate with Intel AMT enabled machines.
-
-## Plugin Support
-### Outputs
-Outputs should be referenced by name. A single device can have more than one instance
-of an output type. A value of `-` in the table below indicates that there is no value
-set for that field.
-
-
-| Name | Description | Unit | Precision | Scaling Factor |
-| ---- | ----------- | ---- | --------- | -------------- |
-| power.state | An output type for power state readings (on/off). | - | - | - |
-| boot.target | An output type for boot target settings. | - | - | - |
-
-
-### Device Handlers
-Device Handlers should be referenced by name.
-
-| Name | Description | Read | Write | Bulk Read |
-| ---- | ----------- | ---- | ----- | --------- |
-| boot_target | A handler for setting an AMT device's boot target. | ✗ | ✓ | ✗ |
-| power | A handler for power control of an AMT device. | ✓ | ✓ | ✗ |
-
-
-### Write Values
-This plugin supports the following values when writing to a device via a handler.
-
-| Handler | Write Action | Write Data |
-| ------- | ------------ | ---------- |
-| boot_target | `target` | `pxe`, `hd`, `cd` |
-| chassis.power | `state` | `on`, `off`, `cycle` |
-
 
 ## Getting Started
 
-### Getting the Plugin
-You can get the Synse AMT plugin either by cloning this repo, setting up the project dependencies,
-and building the binary or docker image:
-```bash
-# Setup the project
-$ make setup
+### Getting
 
-# Build the binary
-$ make build
+You can install the AMT plugin via a [release](https://github.com/vapor-ware/synse-amt-plugin/releases)
+binary or via Docker image
 
-# Build the docker image
-$ make docker
+```
+docker pull vaporio/amt-plugin
 ```
 
-You can also use a pre-built docker image from [DockerHub][plugin-dockerhub]
+If you wish to use a development build, fork and clone the repo and build the plugin
+from source.
+
+### Running
+
+The AMT plugin requires device configurations for the AMT-enabled servers that it will
+communicate with in order for it to run. As such, running the plugin without additional configuration
+will cause it to fail.
+
+A simple example of what device configurations may look like can be found in the
+[config/device](config/device) directory. Once you have your plugin configurations defined,
+you can update the [compose file](docker-compose.yaml) to mount them into the plugin container
+and run it with:
+
 ```bash
-$ docker pull vaporio/amt-plugin
+docker-compose up -d
 ```
 
-Or a pre-built binary from the latest [release][plugin-release].
+## Plugin Configuration
 
-### Running the Plugin
-If you are using the plugin binary:
-```bash
-# The name of the plugin binary may differ depending on whether it is built
-# locally or a pre-built binary is used.
-$ ./plugin
-```
-
-If you are using the Docker image:
-```bash
-$ docker run vaporio/amt-plugin
-```
-
-In either case, the plugin should run, but you should not see any devices configured,
-and you should see errors in the logs saying that various configurations were not found.
-See the next section for how to configure your plugin.
-
-For information and examples on how to deploy a plugin with Synse Server, see the
-[Plugin SDK Documentation][sdk-documentation]
-
-## Configuring the Plugin for your deployment
 Plugin and device configuration are described in detail in the [SDK Configuration Documentation][sdk-config-docs].
 
-For your deployment, you will need to provide your own device config, examples of
-which can be found in [config/device](config/device).
+There is an additional config scheme specific to this plugin for the contents of a configured
+device's `data` field. Device `data` may be specified in two places (the prototype config and
+the instance config sections). The data scheme describes the resulting unified config from
+both sources.
 
-### device config
-The device configuration for the AMT plugin is fairly standard. It requires devices to
-have:
-- `ip`: The IP address/hostname for the AMT-enabled machine. (port not included)
-- `password`: The password for AMT.
-
-An example of a power device config for an AMT-enabled machine at 10.1.2.3 with password
-ADMIN is as follows:
+An example:
 
 ```yaml
-version: 1.0
-locations:
-  - name: r1vec
-    rack: 
-      name: rack-1
-    board:
-      name: vec
 devices:
-  - name: power
-    outputs:
-      - type: power
-    instances:
-      - info: System Power
-        location: r1vec
-        data:
-          ip: 10.1.2.3
-          password: ADMIN
+- type: boot_target
+  instances:
+  - info: Server Boot Target
+    data:
+      ip: "127.0.0.1"
+      password: "guest"
 ```
 
-Once you have your own config, you can either mount it into the container to the default location
-at `/etc/synse/plugin/config/device`,  or mount it anywhere in the container, e.g.
-`/tmp/cfg/<filename>.yml`, and specify that path in the device instance config override environment
-variable, `PLUGIN_DEVICE_CONFIG=/tmp/cfg`.
+| Field      | Required | Type   | Description                                              |
+| ---------- | -------- | ------ | -------------------------------------------------------- |
+| `ip`       | yes      | string | The hostname/ip of the AMT-enabled server to connect to. |
+| `password` | yes      | string | The AMT password for the server.                         |
 
-## Feedback
-Feedback for this plugin, or any component of the Synse ecosystem, is greatly appreciated!
-If you experience any issues, find the documentation unclear, have requests for features,
-or just have questions about it, we'd love to know. Feel free to open an issue for any
-feedback you may have.
+### Reading Outputs
 
-## Contributing
-We welcome contributions to the project. The project maintainers actively manage the issues
-and pull requests. If you choose to contribute, we ask that you either comment on an existing
-issue or open a new one.
+Outputs are referenced by name. A single device may have more than one instance
+of an output type. A value of `-` in the table below indicates that there is no value
+set for that field. The *built-in* section describes outputs this plugin uses which
+are [built-in to the SDK](https://github.com/vapor-ware/synse-sdk/blob/v3/staging/sdk/output/builtins.go).
 
-The Synse AMT Plugin, and all other components of the Synse ecosystem, is released under the
-[GPL-3.0](LICENSE) license.
+**Built-in**
 
+| Name  | Description                       | Unit  | Type    | Precision |
+| ----- | --------------------------------- | :---: | ------- | :-------: |
+| state | The power state of an AMT device. | -     | `state` | -         |
+
+### Device Handlers
+
+Device Handlers are referenced by name.
+
+| Name        | Description                                | Outputs | Read  | Write | Bulk Read | Listen |
+| ----------- | ------------------------------------------ | ------- | :---: | :---: | :-------: | :----: |
+| boot_target | A handler for setting server boot target.  | `-`     | ✗     | ✓     | ✗         | ✗      |
+| power       | A handler for managing server power state. | `state` | ✓     | ✓     | ✗         | ✗      |
+
+### Write Values
+
+This plugin supports the following values when writing to a device via a handler.
+
+| Handler     | Write Action  | Write Data           | Description |
+| ----------- | :-----------: | :------------------: | ----------- |
+| boot_target | `target`      | `pxe`, `hd`, `cd`    | The boot target to set. |
+| power       | `state`       | `on`, `off`, `cycle` | The minimum bound for readings to be generated within. |
+
+## Troubleshooting
+
+### Debugging
+
+The plugin can be run in debug mode for additional logging. This is done by:
+
+- Setting the `debug` option  to `true` in the plugin configuration YAML ([config.yml](config.yml))
+
+  ```yaml
+  debug: true
+  ```
+
+- Passing the `--debug` flag when running the binary/image
+
+  ```
+  docker run vaporio/amt-plugin --debug
+  ```
+
+- Running the image with the `PLUGIN_DEBUG` environment variable set to `true`
+
+  ```
+  docker run -e PLUGIN_DEBUG=true vaporio/amt-plugin
+  ```
+
+## Contributing / Reporting
+
+If you experience a bug, would like to ask a question, or request a feature, open a
+[new issue](https://github.com/vapor-ware/synse-amt-plugin/issues) and provide as much
+context as possible. All contributions, questions, and feedback are welcomed and appreciated.
+
+## License
+
+The Synse AMT Plugin is licensed under GPLv3. See [LICENSE](LICENSE) for more info.
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin?ref=badge_large)
 
 [synse-server]: https://github.com/vapor-ware/synse-server
 [plugin-dockerhub]: https://hub.docker.com/r/vaporio/amt-plugin
 [plugin-release]: https://github.com/vapor-ware/synse-amt-plugin/releases
 [sdk-config-docs]: http://synse-sdk.readthedocs.io/en/latest/user/configuration.html
 [sdk-documentation]:http://synse-sdk.readthedocs.io/en/latest/user/tutorial.html#build-and-run-the-plugin
-
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvapor-ware%2Fsynse-amt-plugin?ref=badge_large)
