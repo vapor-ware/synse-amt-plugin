@@ -3,7 +3,7 @@
 #
 
 PLUGIN_NAME    := amt
-PLUGIN_VERSION := 3.0.0-alpha
+PLUGIN_VERSION := 2.0.0
 IMAGE_NAME     := vaporio/amt-plugin
 BIN_NAME       := synse-amt-plugin
 
