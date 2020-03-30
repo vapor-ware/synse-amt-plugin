@@ -91,6 +91,15 @@ This plugin supports the following values when writing to a device via a handler
 | boot_target | `target`      | `pxe`, `hd`, `cd`    | The boot target to set. |
 | power       | `state`       | `on`, `off`, `cycle` | The minimum bound for readings to be generated within. |
 
+## Compatibility
+
+Below is a table describing the compatibility of plugin versions with Synse platform versions.
+
+|             | Synse v2 | Synse v3 |
+| ----------- | -------- | -------- |
+| plugin v1.x | ✓        | ✗        |
+| plugin v2.x | ✗        | ✓        |
+
 ## Troubleshooting
 
 ### Debugging
