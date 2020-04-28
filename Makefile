@@ -3,7 +3,7 @@
 #
 
 PLUGIN_NAME    := amt
-PLUGIN_VERSION := 2.0.0
+PLUGIN_VERSION := 2.0.1
 IMAGE_NAME     := vaporio/amt-plugin
 BIN_NAME       := synse-amt-plugin
 
@@ -23,20 +23,20 @@ LDFLAGS := -w \
 
 .PHONY: build
 build:  ## Build the plugin binary
-	go build -ldflags "${LDFLAGS}" -o ${BIN_NAME}
+	go build -ldflags "${LDFLAGS}" -o ${BIN_NAME} || exit
 
 .PHONY: build-linux
 build-linux:  ## Build the plugin binarry for linux amd64
-	GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o ${BIN_NAME} .
+	GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o ${BIN_NAME} . || exit
 
 .PHONY: clean
 clean:  ## Remove temporary files
-	go clean -v
+	go clean -v || exit
 	rm -rf dist
 
 .PHONY: deploy
 deploy:  ## Run a local deployment the plugin with Synse Server
-	docker-compose -f deploy.yml up -d
+	docker-compose -f deploy.yml up -d || exit
 
 .PHONY: docker
 docker:  ## Build the docker image
@@ -44,11 +44,11 @@ docker:  ## Build the docker image
 		--label "org.label-schema.build-date=${BUILD_DATE}" \
 		--label "org.label-schema.vcs-ref=${GIT_COMMIT}" \
 		--label "org.label-schema.version=${PLUGIN_VERSION}" \
-		-t ${IMAGE_NAME}:latest .
+		-t ${IMAGE_NAME}:latest . || exit
 
 .PHONY: fmt
 fmt:  ## Run goimports on all go files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
+	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file" || exit ; done
 
 .PHONY: github-tag
 github-tag:  ## Create and push a tag with the current plugin version
@@ -57,7 +57,7 @@ github-tag:  ## Create and push a tag with the current plugin version
 
 .PHONY: lint
 lint:  ## Lint project source files
-	golint -set_exit_status ./pkg/...
+	golint -set_exit_status ./pkg/... || exit
 
 .PHONY: version
 version:  ## Print the version of the plugin
