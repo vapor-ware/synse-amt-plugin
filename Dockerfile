@@ -1,5 +1,5 @@
 
-FROM vaporio/python:3.6-slim
+FROM docker.io/vaporio/python:3.6-slim
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.name="vaporio/amt-plugin" \

@@ -33,13 +33,11 @@ dockers:
   -
     goos: linux
     goarch: amd64
-    binaries:
-      - synse-amt-plugin
     image_templates:
-      - vaporio/amt-plugin:{{ .Tag }}
-      - vaporio/amt-plugin:{{ .Major }}
-      - vaporio/amt-plugin:{{ .Major }}.{{ .Minor }}
-      - vaporio/amt-plugin:latest
+      - docker.io/vaporio/amt-plugin:{{ .Tag }}
+      - docker.io/vaporio/amt-plugin:{{ .Major }}
+      - docker.io/vaporio/amt-plugin:{{ .Major }}.{{ .Minor }}
+      - docker.io/vaporio/amt-plugin:latest
     build_flag_templates:
       - "--label=org.label-schema.version={{ .Version }}"
       - "--label=org.label-schema.build-date={{ .Date }}"
